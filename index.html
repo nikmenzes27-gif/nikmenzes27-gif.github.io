@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Black Angel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Metal+Mania&family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; transition: all 0.2s ease; }
+        
+        body {
+            margin: 0; 
+            font-family: 'Fredoka', sans-serif; 
+            color: #fff; 
+            background-color: #000; 
+            background-image: linear-gradient(rgba(255, 255, 255, 0.02) 50%, rgba(0, 0, 0, 0.25) 50%);
+            background-size: 100% 4px;
+            display: flex; 
+            flex-direction: column;
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            width: 100vw;
+            overflow: hidden; 
+            padding: 15px;
+        }
+
+        .container { 
+            width: 100%; 
+            max-width: 440px; 
+            display: flex;
+            flex-direction: column;
+            max-height: 98vh;
+        }
+
+        .tropa-titulo { 
+            text-align: center; 
+            font-family: 'Metal Mania', cursive; 
+            font-size: 4.8rem;
+            margin: 0 0 10px 0; 
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: linear-gradient(0deg, #444 0%, #fff 50%, #444 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px rgba(255,255,255,0.4));
+            animation: glowTitle 3s infinite ease-in-out;
+            line-height: 0.9;
+        }
+
+        @keyframes glowTitle {
+            0%, 100% { filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)); }
+            50% { filter: drop-shadow(0 0 25px rgba(255,255,255,0.6)); }
+        }
+
+        .warning {
+            background: #f00;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        /* Restante dos estilos (mesmo de antes) */
+        .card { 
+            background: #0d0d0d;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            position: relative;
+            padding: 2px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            width: 100%;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 12px;
+            padding: 2px; 
+            background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.4) 100%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            filter: blur(1px);
+        }
+
+        .card-content {
+            background: #0d0d0d;
+            padding: 15px;
+            border-radius: 10px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        #lista {
+            max-height: 150px;
+            overflow-y: auto;
+            margin-bottom: 5px;
+            padding-right: 5px;
+        }
+
+        #lista::-webkit-scrollbar { width: 4px; }
+        #lista::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+
+        .select-box, .input-text { 
+            width: 100%; height: 45px; background: #000; border: 1px solid #333; 
+            padding: 0 15px; border-radius: 4px; color: #fff; font-size: 15px; outline: none;
+        }
+
+        .btn-add { 
+            background: #fff; color: #000; width: 100%; height: 50px; border-radius: 4px; 
+            font-family: 'Luckiest Guy'; font-size: 1.1rem; border: none; cursor: pointer; 
+            text-transform: uppercase; margin-top: 5px;
+        }
+
+        .item-lista { 
+            background: #111; padding: 10px; border-radius: 6px; margin-bottom: 6px; 
+            display: flex; flex-direction: column; border: 1px solid #222;
+        }
+
+        .item-info { display: flex; justify-content: space-between; align-items: center; }
+        
+        .cart-controls { display: flex; align-items: center; gap: 8px; background: #000; padding: 2px 6px; border-radius: 4px; border: 1px solid #333; }
+        .btn-cart-qty { background: transparent; border: none; color: #fff; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
+
+        .btn-footer { 
+            height: 40px; border-radius: 4px; border: 1px solid #333; font-family: 'Luckiest Guy'; 
+            cursor: pointer; background: #050505; color: #fff; flex: 1;
+        }
+
+        .btn-finish { 
+            background: #151515; color: #fff; border: 1px solid #333; height: 45px; 
+            width: 100%; border-radius: 4px; font-family: 'Luckiest Guy'; cursor: pointer;
+        }
+
+        .btn-finish.active-parc { background: #fff; color: #000; border-color: #fff; }
+
+        .btn-discord { 
+            background: #fff; color: #000; border: none; font-family: 'Luckiest Guy'; 
+            height: 45px; border-radius: 4px; cursor: pointer; width: 100%; margin-top: 5px;
+        }
+
+        .box-total { 
+            background: #000; border: 2px solid #fff; padding: 15px; border-radius: 4px; 
+            text-align: center; margin-top: auto; width: 100%;
+        }
+
+        .val-total { display: block; font-size: 2.8rem; font-family: 'Luckiest Guy'; color: #fff; line-height: 1; margin-top: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 class="tropa-titulo">Black Angel</h1>
+
+    <div id="localStorageWarning" class="warning" style="display:none;">
+        ⚠️ Modo sem salvamento automático.<br>
+        <small>Abra pelo GitHub Pages ou servidor local para salvar dados.</small>
+    </div>
+
+    <div class="card">
+        <div class="card-content">
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="vendedorNome" class="input-text" placeholder="Vendedor" oninput="salvarVendedor()">
+                <input type="number" id="vendedorID" class="input-text" placeholder="ID" style="width: 100px;" oninput="salvarVendedor()">
+            </div>
+            
+            <select id="itemSel" class="select-box">
+                <option value="" disabled selected>Selecionar Munição...</option>
+                <option value="PT 100X,5000,7500">PT 100X</option>
+                <option value="SMG 150X,8000,10000">SMG 150X</option>
+                <option value="FUZIL 250X,12000,14000">FUZIL 250X</option>
+                <option value="C4,2500,2900">C4</option>
+            </select>
+            
+            <input type="number" id="qtd" class="input-text" value="1" min="1">
+            <button class="btn-add" onclick="addItem()">ADICIONAR ITEM</button>
+        </div>
+    </div>
+
+    <div class="card" id="cardCarrinho" style="display:none;">
+        <div class="card-content">
+            <div id="lista"></div>
+            <div style="display:flex; gap:8px;">
+                <button class="btn-footer" onclick="limpar()">Zerar</button>
+                <button class="btn-footer" onclick="copyTotal()">Copiar</button>
+            </div>
+            <button class="btn-finish" id="btnModo" onclick="toggleModo()">MODO: SEM PARCERIA</button>
+            <button class="btn-discord" onclick="enviarLogs()">ENVIAR PARA LOGS 🚀</button>
+        </div>
+    </div>
+
+    <div class="box-total">
+        <span style="font-size: 10px; color: #888; letter-spacing: 2px; font-weight: bold; text-transform: uppercase;">Total a Pagar</span>
+        <b id="totalBruto" class="val-total">R$ 0,00</b>
+    </div>
+</div>
+
+<script>
+    // Configuração do Webhook
+    const _0x_config = {
+        _secret: atob("aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTUxNDY2MTQ5NjE3OTY1ODg2NS9MQzZ3UkZCcnFsaW5adE9fWXFhZ1h0LUlwS3RvSGJZb2ZHZVI3emY1YlViNlNNMmphd2RJYmpUZUFfR2JleVZmdEEtZw==")
+    };
+
+    let lote = [];
+    let modoVenda = 'pista';
+    let storageAvailable = true;
+
+    const formatar = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+    // Verifica se localStorage está disponível
+    function isLocalStorageAvailable() {
+        try {
+            localStorage.setItem('test', 'test');
+            localStorage.removeItem('test');
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    function carregarDados() {
+        if (!storageAvailable) return;
+        try {
+            lote = JSON.parse(localStorage.getItem('blackangel_carrinho')) || [];
+            modoVenda = localStorage.getItem('blackangel_modo') || 'pista';
+        } catch (e) {}
+    }
+
+    function salvarDados() {
+        if (!storageAvailable) return;
+        try {
+            localStorage.setItem('blackangel_carrinho', JSON.stringify(lote));
+            localStorage.setItem('blackangel_modo', modoVenda);
+        } catch (e) {}
+    }
+
+    function carregarVendedor() {
+        if (!storageAvailable) return;
+        try {
+            document.getElementById('vendedorNome').value = localStorage.getItem('blackangel_vendedor_nome') || "";
+            document.getElementById('vendedorID').value = localStorage.getItem('blackangel_vendedor_id') || "";
+        } catch (e) {}
+    }
+
+    function salvarVendedor() {
+        if (!storageAvailable) return;
+        try {
+            localStorage.setItem('blackangel_vendedor_nome', document.getElementById('vendedorNome').value);
+            localStorage.setItem('blackangel_vendedor_id', document.getElementById('vendedorID').value);
+        } catch (e) {}
+    }
+
+    function addItem() {
+        const sel = document.getElementById('itemSel');
+        if(!sel.value) return;
+        const [nome, vParc, vPista] = sel.value.split(',');
+        const qtdInput = parseInt(document.getElementById('qtd').value) || 1;
+        
+        const itemExistente = lote.find(i => i.nome === nome);
+        if (itemExistente) {
+            itemExistente.qtd += qtdInput;
+        } else {
+            lote.push({ nome, vParc: Number(vParc), vPista: Number(vPista), qtd: qtdInput });
+        }
+        document.getElementById('qtd').value = 1;
+        render();
+    }
+
+    function alterarQtdCarrinho(index, delta) {
+        lote[index].qtd = Math.max(1, lote[index].qtd + delta);
+        render();
+    }
+
+    function render() {
+        const lista = document.getElementById('lista');
+        const card = document.getElementById('cardCarrinho');
+        card.style.display = lote.length ? 'block' : 'none';
+        lista.innerHTML = '';
+        let total = 0;
+        
+        lote.forEach((item, i) => {
+            let precoUnidade = (modoVenda === 'parceria' ? item.vParc : item.vPista);
+            let subtotal = precoUnidade * item.qtd;
+            total += subtotal;
+            lista.innerHTML += `
+                <div class="item-lista">
+                    <div class="item-info">
+                        <span style="color:#eee; font-size:14px; font-weight:600;">${item.nome}</span>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <div class="cart-controls">
+                                <button class="btn-cart-qty" onclick="alterarQtdCarrinho(${i}, -1)">-</button>
+                                <span style="font-weight:bold; min-width:15px; text-align:center; font-size:14px;">${item.qtd}</span>
+                                <button class="btn-cart-qty" onclick="alterarQtdCarrinho(${i}, 1)">+</button>
+                            </div>
+                            <span onclick="remover(${i})" style="color:#555; cursor:pointer;">✕</span>
+                        </div>
+                    </div>
+                </div>`;
+        });
+
+        document.getElementById('totalBruto').innerText = formatar(total);
+        window.ultimoTotal = total;
+
+        const btn = document.getElementById('btnModo');
+        btn.innerText = modoVenda === 'parceria' ? "MODO: COM PARCERIA 🤝" : "MODO: SEM PARCERIA ✕";
+        btn.className = modoVenda === 'parceria' ? 'btn-finish active-parc' : 'btn-finish';
+        
+        salvarDados();
+    }
+
+    function remover(i) { lote.splice(i, 1); render(); }
+    function limpar() { if(confirm("Limpar tudo?")) { lote = []; render(); } }
+    function toggleModo() { modoVenda = (modoVenda === 'pista' ? 'parceria' : 'pista'); render(); }
+    function copyTotal() { 
+        if (window.ultimoTotal) {
+            navigator.clipboard.writeText(window.ultimoTotal); 
+            alert("Valor copiado!"); 
+        }
+    }
+
+    async function enviarLogs() {
+        const vNome = document.getElementById('vendedorNome').value.trim();
+        const vID = document.getElementById('vendedorID').value.trim();
+
+        if(!vNome || !vID) { alert("Preencha seu Nome e ID!"); return; }
+        if(!lote.length) { alert("Adicione pelo menos um item!"); return; }
+
+        const payload = {
+            embeds: [{
+                title: "📦 REGISTRO BLACK ANGEL",
+                color: 0x000000,
+                fields: [
+                    { name: "Vendedor", value: `👤 **${vNome}** (${vID})`, inline: false },
+                    { name: "Itens", value: lote.map(i => `• ${i.qtd}x **${i.nome}**`).join('\n') },
+                    { name: "Total", value: `\`${formatar(window.ultimoTotal)}\``, inline: true },
+                    { name: "Tipo", value: modoVenda === 'parceria' ? "🤝 Parceria" : "✕ Pista", inline: true }
+                ],
+                footer: { text: "Nova Venda Black Angel | " + new Date().toLocaleString() }
+            }]
+        };
+
+        try {
+            await fetch(_0x_config._secret, { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' }, 
+                body: JSON.stringify(payload) 
+            });
+            alert("✅ Log enviada com sucesso!");
+            lote = []; 
+            render();
+        } catch (e) {
+            alert("❌ Erro ao enviar log. Verifique sua conexão.");
+        }
+    }
+
+    // Inicialização
+    storageAvailable = isLocalStorageAvailable();
+    if (!storageAvailable) {
+        document.getElementById('localStorageWarning').style.display = 'block';
+    }
+
+    carregarDados();
+    carregarVendedor();
+    render();
+</script>
+</body>
+</html>
